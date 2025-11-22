@@ -1,210 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sequence Alignment Spellchecker</title>
+  <meta charset="UTF-8">
+  <title>Spell Checker</title>
   <style>
-    :root{--bg:#0f172a;--card:#0b1220;--accent:#7c3aed;--muted:#94a3b8;--glass:rgba(255,255,255,0.04)}
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    body{background:linear-gradient(180deg,#071027 0%, #0b1220 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:32px}
-    .card{width:980px;max-width:96%;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(2,6,23,0.6);}
-    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
-    header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-    header h1{font-size:20px;margin:0}
-    .controls{background:var(--card);padding:12px;border-radius:12px}
-    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type=text], select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
-    button{background:var(--accent);border:none;padding:10px 12px;border-radius:10px;color:white;font-weight:600;cursor:pointer}
-    .results{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:12px;border-radius:12px;min-height:220px}
-    .row{display:flex;gap:8px;align-items:center}
-    .small{font-size:13px;color:var(--muted)}
-    .suggestion{padding:8px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,0.03);margin-bottom:8px}
-    pre{white-space:pre-wrap;margin:0}
-    footer{margin-top:10px;font-size:12px;color:var(--muted)}
-    .filebox{display:flex;gap:8px;align-items:center}
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #responses {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      max-width: 400px;
+    }
+    .response {
+      padding: 5px;
+      border-bottom: 1px solid #eee;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <header>
-      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><rect rx='8' width='36' height='36' fill='%237c3aed'/><text x='50%' y='58%' font-size='18' fill='white' text-anchor='middle' font-family='Arial'>A</text></svg>" alt="logo" style="width:36px;height:36px;border-radius:8px" />
-      <div>
-        <h1>Sequence Alignment Spellchecker</h1>
-        <div class="small">Needleman-Wunsch with custom substitution &amp; gap costs.</div>
-      </div>
-    </header>
+  <h2>Spell Checker</h2>
+  <form id="textForm">
+    <input type="text" id="textInput" placeholder="Type a word..." required>
+    <button type="submit">Check</button>
+  </form>
 
-    <div class="grid">
-      <div>
-        <div class="controls">
-          <label for="word">Word to check</label>
-          <input id="word" type="text" placeholder="Type a word (e.g. recieve)" />
-
-          <div style="height:10px"></div>
-
-          <!-- Dictionary source removed -->
-
-          <div style="height:10px"></div>
-
-          <label>Dictionary source</label>
-          <div class="filebox">
-            <button id="fetchDict">Load dictionary.txt (same folder)</button>
-            <input id="dictFile" type="file" accept=".txt" />
-          </div>
-
-          <div style="height:10px"></div>
-
-          <label>Options</label>
-          <div class="row" style="margin-bottom:8px">
-            <div class="small">Top results</div>
-            <div style="width:80px;margin-left:auto;font-weight:600">10</div>
-          </div>
-
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button id="check">Check</button>
-            <button id="clear">Clear</button>
-          </div>
-
-          <div style="height:10px"></div>
-          <div class="small">Scoring: exact=0, consonant↔consonant=1, vowel↔vowel=1, vowel↔consonant=3, gap=2</div>
-          <div class="small" style="margin-top:6px">Note: To use automatic dictionary load, serve this file over HTTP (e.g. `python -m http.server`) so fetch('dictionary.txt') works.</div>
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="results" id="results">
-          <div class="small">No results yet — enter a word and click Check.</div>
-        </div>
-      </div>
-
-      <aside>
-        <div class="controls">
-          <div class="small" style="margin-bottom:8px">Dictionary preview (first 200 words)</div>
-          <div id="preview" style="max-height:440px;overflow:auto;font-family:monospace;font-size:13px;color:var(--muted)"></div>
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="controls" style="margin-top:8px">
-          <div class="small">How it works</div>
-          <div style="margin-top:8px;font-size:13px;color:var(--muted)">
-            This page applies a global pairwise alignment (Needleman–Wunsch) to score candidate dictionary words against the input using the penalties you requested. Lower score = better match.
-          </div>
-        </div>
-      </aside>
-    </div>
-
-    <footer>
-      <div class="small">Created with love — run on a local web server for best results.</div>
-    </footer>
-  </div>
+  <div id="responses"></div>
 
   <script>
-    // simple vowel test
-    const vowels = new Set(['a','e','i','o','u']);
-    function isVowel(ch){ return vowels.has(ch.toLowerCase()); }
+    const form = document.getElementById('textForm');
+    const input = document.getElementById('textInput');
+    const responsesDiv = document.getElementById('responses');
+    let dictionary = [];
 
-    // substitution cost
-    function subsCost(a,b){
-      if(a===b) return 0;
-      const va = isVowel(a);
-      const vb = isVowel(b);
-      if(va && vb) return 1;
-      if(!va && !vb) return 1;
-      return 3; // vowel vs consonant
+    // Load dictionary.txt (must be in same folder)
+    fetch('dictionary.txt')
+      .then(response => response.text())
+      .then(text => {
+        dictionary = text.split(/\r?\n/).filter(word => word.trim().length > 0);
+      })
+      .catch(err => console.error("Error loading dictionary:", err));
+
+    // Helper: check if a character is a vowel
+    function isVowel(ch) {
+      return 'aeiou'.includes(ch.toLowerCase());
     }
 
-    const GAP = 2;
+    // Custom alignment scoring
+    function alignmentDistance(a, b) {
+      const m = a.length;
+      const n = b.length;
+      const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
 
-    // Needleman-Wunsch returning score and alignment strings (optional)
-    function alignScore(s,t){
-      s = s.toLowerCase(); t = t.toLowerCase();
-      const n = s.length, m = t.length;
-      const dp = Array.from({length:n+1},()=>new Array(m+1).fill(0));
-      for(let i=0;i<=n;i++) dp[i][0] = i*GAP;
-      for(let j=0;j<=m;j++) dp[0][j] = j*GAP;
-      for(let i=1;i<=n;i++){
-        for(let j=1;j<=m;j++){
-          const costSub = dp[i-1][j-1] + subsCost(s[i-1], t[j-1]);
-          const costDel = dp[i-1][j] + GAP;
-          const costIns = dp[i][j-1] + GAP;
-          dp[i][j] = Math.min(costSub, costDel, costIns);
+      // Initialize gap penalties
+      for (let i = 0; i <= m; i++) dp[i][0] = i * 2;
+      for (let j = 0; j <= n; j++) dp[0][j] = j * 2;
+
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          const charA = a[i - 1].toLowerCase();
+          const charB = b[j - 1].toLowerCase();
+
+          let cost;
+          if (charA === charB) {
+            cost = 0; // exact match
+          } else if (isVowel(charA) && isVowel(charB)) {
+            cost = 1; // vowel-vowel mismatch
+          } else if (!isVowel(charA) && !isVowel(charB)) {
+            cost = 1; // consonant-consonant mismatch
+          } else {
+            cost = 3; // vowel-consonant mismatch
+          }
+
+          dp[i][j] = Math.min(
+            dp[i - 1][j - 1] + cost, // substitution
+            dp[i - 1][j] + 2,        // deletion (gap)
+            dp[i][j - 1] + 2         // insertion (gap)
+          );
         }
       }
-      return dp[n][m];
+      return dp[m][n];
     }
 
-    // attempt to fetch dictionary.txt from same folder
-    let DICT = [];
-    async function loadDictByFetch(){
-      try{
-        const r = await fetch('dictionary.txt');
-        if(!r.ok) throw new Error('Fetch failed');
-        const txt = await r.text();
-        DICT = txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-        renderPreview();
-        return true;
-      }catch(e){
-        console.warn('Auto-load failed',e);
-        return false;
-      }
-    }
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const word = input.value.trim().toLowerCase();
+      if (!word || dictionary.length === 0) return;
 
-    function loadDictFromFile(file){
-      const reader = new FileReader();
-      reader.onload = e=>{
-        const txt = e.target.result;
-        DICT = txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-        renderPreview();
-      };
-      reader.readAsText(file);
-    }
+      // Compute distances
+      const scored = dictionary.map(dictWord => ({
+        word: dictWord,
+        score: alignmentDistance(word, dictWord.toLowerCase())
+      }));
 
-    function renderPreview(){
-      const p = document.getElementById('preview');
-      p.textContent = DICT.slice(0,200).join('\n');
-    }
+      // Sort by score (lower = better)
+      scored.sort((a, b) => a.score - b.score);
 
-    document.getElementById('fetchDict').addEventListener('click', async ()=>{
-      const ok = await loadDictByFetch();
-      if(!ok) alert('Could not fetch dictionary.txt automatically. You can upload the file using the file input on the right.');
-    });
+      // Take top 10 matches
+      const bestMatches = scored.slice(0, 10);
 
-    document.getElementById('dictFile').addEventListener('change', e=>{
-      const f = e.target.files[0]; if(f) loadDictFromFile(f);
-    });
-
-    document.getElementById('check').addEventListener('click', ()=>{
-      const word = document.getElementById('word').value.trim();
-      if(!word){ alert('Enter a word to check.'); return; }
-      if(DICT.length===0){ alert('Dictionary not loaded. Click "Load dictionary.txt" or upload a dictionary file.'); return; }
-      const topN = 10;
-      // compute scores
-      const out = DICT.map(w=>({w,score:alignScore(word,w)}));
-      out.sort((a,b)=>a.score - b.score || a.w.localeCompare(b.w));
-      const results = out.slice(0, topN);
-      const resultsEl = document.getElementById('results');
-      resultsEl.innerHTML = '';
-      results.forEach(r=>{
-        const div = document.createElement('div'); div.className='suggestion';
-        div.innerHTML = `<div><strong>${escapeHtml(r.w)}</strong><div class='small'>score: ${r.score}</div></div><div style='min-width:80px;text-align:right'><button data-word='${escapeHtml(r.w)}'>Use</button></div>`;
-        div.querySelector('button').addEventListener('click',()=>{
-          document.getElementById('word').value = r.w;
-        });
-        resultsEl.appendChild(div);
+      // Display results
+      responsesDiv.innerHTML = '';
+      bestMatches.forEach(match => {
+        const div = document.createElement('div');
+        div.className = 'response';
+        div.textContent = `${match.word} (score: ${match.score})`;
+        responsesDiv.appendChild(div);
       });
-    });
-
-    document.getElementById('clear').addEventListener('click', ()=>{
-      document.getElementById('word').value=''; document.getElementById('results').innerHTML='<div class="small">Cleared.</div>';
-    });
-
-    function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-    // try to auto-load on page open
-    loadDictByFetch().then(ok=>{
-      if(!ok){ const p = document.getElementById('preview'); p.textContent = 'dictionary.txt not found via fetch; upload a dictionary .txt file using the file chooser.'; }
     });
   </script>
 </body>
