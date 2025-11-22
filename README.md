@@ -1,6 +1,6 @@
 **Spellcheck - CS340, Project 4**
 
-This program performs a spellcheck of a given word against a dictionary of words from the novel *Pride and Prejudice*.
+This simple webpage performs a spellcheck of a given word against a dictionary of words from the novel *Pride and Prejudice*.
 
 Each word is compared using a sequence alignment algorithm with the following penalties:
   Exact Match = 0;
