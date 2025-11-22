@@ -18,6 +18,11 @@
       padding: 5px;
       border-bottom: 1px solid #eee;
     }
+    #time {
+      margin-top: 10px;
+      font-style: italic;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -28,11 +33,13 @@
   </form>
 
   <div id="responses"></div>
+  <div id="time"></div>
 
   <script>
     const form = document.getElementById('textForm');
     const input = document.getElementById('textInput');
     const responsesDiv = document.getElementById('responses');
+    const timeDiv = document.getElementById('time');
     let dictionary = [];
 
     // Load dictionary.txt (must be in same folder)
@@ -89,6 +96,9 @@
       const word = input.value.trim().toLowerCase();
       if (!word || dictionary.length === 0) return;
 
+      // Start timing
+      const start = performance.now();
+
       // Compute distances
       const scored = dictionary.map(dictWord => ({
         word: dictWord,
@@ -101,6 +111,10 @@
       // Take top 10 matches
       const bestMatches = scored.slice(0, 10);
 
+      // End timing
+      const end = performance.now();
+      const elapsed = (end - start).toFixed(2);
+
       // Display results
       responsesDiv.innerHTML = '';
       bestMatches.forEach(match => {
@@ -109,6 +123,9 @@
         div.textContent = `${match.word} (score: ${match.score})`;
         responsesDiv.appendChild(div);
       });
+
+      // Show execution time
+      timeDiv.textContent = `Execution time: ${elapsed} ms`;
     });
   </script>
 </body>
